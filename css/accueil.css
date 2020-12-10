@@ -1,0 +1,13 @@
+/* Sections titles */
+h2 img.position-absolute {
+    bottom: -5%;
+    right: 5px;
+    height: 2em;
+}
+
+/* Map Parc Monceau */
+.map a {
+    background: url(../img/carte.png) no-repeat center center;
+    background-size: cover;
+    min-height: 200px;
+}

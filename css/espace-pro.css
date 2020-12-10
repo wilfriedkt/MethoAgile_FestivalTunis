@@ -1,0 +1,9 @@
+/* TABLES */
+table.pro-table td, table.pro-table th {
+    vertical-align: middle;
+}
+
+/* Tables icons */
+table.pro-table i.fas {
+    font-size: 1.7em;
+}

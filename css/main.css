@@ -1,0 +1,131 @@
+/******* COLORS *******/
+.color-1 { color: #01161E; } /* rgba(1,22,30,1) */
+.color-2 { color: #124559; } /* rgba(18,69,89,1) */
+.color-3 { color: #598392; } /* rgba(89,131,146,1) */
+.color-4 { color: #AEC3B0; } /* rgba(174,195,176,1) */
+.color-5 { color: #EFF6E0; } /* rgba(239,246,224,1) */
+
+.bgcolor-1 { background-color: #01161E; color: #fff; }
+.bgcolor-1.bg-transp { background-color: rgba(1,22,30,.6); }
+.bgcolor-2 { background-color: #124559; color: #fff; }
+.bgcolor-2.bg-transp { background-color: rgba(18,69,89,.7); }
+.bgcolor-3 { background-color: #598392; color: #fff; }
+.bgcolor-4 { background-color: #AEC3B0; color: #212529; }
+.bgcolor-5 { background-color: #EFF6E0; color: #212529; }
+.bgcolor-5.bg-transp { background-color: rgba(239,246,224,.5); }
+
+body {
+    background-color: #f5f7f5;
+}
+
+/******* FONTS *******/
+body {
+    font-family: 'Roboto', sans-serif;
+}
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+#header nav {
+    font-family: 'Ubuntu', sans-serif;
+}
+
+/******* LINKS AND BUTTONS *******/
+a.btn, button.btn {
+    border: 0;
+}
+a[class*='bgcolor-']:hover, button[class*='bgcolor-']:hover,
+.page-item.active .page-link {
+    color: #f5f7f5;
+    background-color: #01161E;
+}
+.page-item.active .page-link {
+    border-color: #01161E;
+}
+nav .active a[class*='bgcolor-'] {
+    color: #212529;
+    background-color: #AEC3B0;
+    font-weight: bold;
+}
+a#share {
+    right: 0;
+    bottom: 0.2em;
+}
+a#share i::before {
+    font-size: 1.25em;
+}
+
+/******* HEADER *******/
+#header .bg-header {
+    background: url(../img/photos/public.jpg) #124559 center center;
+    background-size: cover;
+}
+#header .h1 > span {
+    vertical-align: middle;
+    font-size: larger;
+}
+#header .h1 .entrelace {
+    letter-spacing: -0.25em;
+}
+.entrelace > span:first-child {
+    vertical-align: -0.05em;
+}
+.entrelace > span:first-child + span {
+    vertical-align: 0.1em;
+}
+.entrelace > span:first-child + span + span {
+    vertical-align: -0.15em;
+}
+.entrelace > span:first-child + span + span + span {
+    font-size: larger;
+}
+
+/* Burger button */
+#header button.navbar-toggler {
+    font-size: 1em;
+}
+.navbar-toggler {
+    color: #f5f7f5;
+}
+.navbar-toggler:hover {
+    color: #AEC3B0;
+}
+.navbar-toggler i {
+    font-size:2em;
+}
+
+/******* FOOTER *******/
+#partenaires img.logo {
+    height: auto;
+    max-height: 80px;
+    max-width: 150px;
+}
+#copyright, #nav-footer {
+    font-size: .8em;
+}
+.social-nav a {
+    font-size: 1.7em;
+}
+#nav-footer a {
+    text-decoration: underline;
+}
+#nav-footer a:hover, .social-nav a:hover {
+    color: #EFF6E0 !important;
+}
+
+/****** FONT-SIZE RESPONSIVE ADJUSTMENTS ******/
+@media (max-width: 991px) {
+
+    #header .h1, #header.h5, .h2, .h3 {
+        font-size: 1.8em;
+    }
+
+}
+@media (max-width: 575px) {
+
+    #header .h1, #header .h2, #header .h5 {
+        font-size: 1.2em;
+    }
+    table.pro-table {
+        font-size: 85%;
+    }
+
+}
