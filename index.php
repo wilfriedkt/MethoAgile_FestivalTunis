@@ -4,6 +4,24 @@ session_start(); // Démarrer la session
 require_once("bd/dbconnect.php");  // connection bd
 // Inclure le fichier de connexion à la base de données et les fonctions
 require_once("fonction.php"); // Fichier contenant la fonction redirectToUrl()
+
+
+
+$query = "SELECT 
+                image, 
+                titre, 
+                description, 
+                date_projection, 
+                heure_projection, 
+                lieu_projection
+          FROM 
+                films_retenus fr
+          JOIN 
+                projectionfilm pf ON fr.id = pf.id"; // Utilisation correcte de JOIN
+
+$stmt = $connexionDB->prepare($query);
+$stmt->execute(); // N'oubliez pas d'exécuter la requête
+$films = $stmt->fetchAll(PDO::FETCH_ASSOC); // Récupération des résultats
 ?>
 
 <!doctype html>
@@ -41,6 +59,20 @@ require_once("fonction.php"); // Fichier contenant la fonction redirectToUrl()
     background-color: #ff0000;
     font-weight: bold;
     }
+
+    .imgfilm {
+    max-height: 300px;
+    max-width: 300px; /* Ajustez cette valeur selon vos besoins */
+    overflow: hidden;  /* Masque le contenu qui déborde */
+    text-overflow: ellipsis; /* Ajoute des points de suspension (...) */
+    }
+
+    .card-title, .card-subtitle {
+        overflow: hidden;
+        white-space: nowrap; /* Empêche le texte de s'enrouler */
+        text-overflow: ellipsis; /* Ajoute des points de suspension (...) */
+    }
+
     </style>
     
   </head>
@@ -59,228 +91,49 @@ require_once("fonction.php"); // Fichier contenant la fonction redirectToUrl()
             <!-- DEBUT SECTION PROGRAMME -->
 
             <section id="programme" class="container-fluid p-0">
-                <h2 class="h3 text-center text-uppercase color-2 bgcolor-4 rounded-top mt-4 mb-3 position-relative">
-                    programme
-                    <img src="img/silhouette-famille-assise.png" alt="" class="position-absolute d-none d-sm-block">
-                </h2>
-                <div id="carouselSeances" class="carousel slide p-3" data-ride="carousel" data-interval="4000">
-                    <!-- Wrapper for carousel items -->
-                    <div class="carousel-inner row w-100 mx-auto">
-                        <div class="carousel-item col-12 col-md-4 px-4 active">
-                            <div class="seance h-100 text-center d-flex flex-column justify-content-between">
-                                <div>
-                                    <h3 class="card-title h4">Jeudi 22 octobre <span class="d-none d-lg-inline">2024<br></span>à 18H</h3>
-                                    <h4 class="card-subtitle mb-2 text-muted h5 d-flex align-items-center justify-content-center">Dilili à Paris - VF</h4>
-                                </div>
-                                <div>
-                                    <a href="seance.html"><img src="img/films/1-dilili-a-paris.jpg" class="card-img-top" alt="Dilili à Paris"></a>
-                                    <p class="my-2">
-                                        <a href="seance.html" class="btn w-75 bgcolor-3">En savoir plus</a>
-                                    </p>
-                                    <p class="my-2">
-                                        <a href="seance.html#reservation" class="btn w-75 bgcolor-2">J'achete mon billet</a>
-                                    </p>
-                                </div>
+    <h2 class="h3 text-center text-uppercase color-2 bgcolor-4 rounded-top mt-4 mb-3 position-relative">
+        programme
+        <img src="img/silhouette-famille-assise.png" alt="" class="position-absolute d-none d-sm-block">
+    </h2>
+    <div id="carouselSeances" class="carousel slide p-3" data-ride="carousel" data-interval="4000">
+        <!-- Wrapper for carousel items -->
+        <div class="carousel-inner row w-100 mx-auto">
+            <?php if ($films): ?>
+                <?php foreach ($films as $index => $film): ?>
+                    <div class="carousel-item col-12 col-md-4 px-4 <?php echo $index === 0 ? 'active' : ''; ?>">
+                        <div class="seance h-100 text-center d-flex flex-column justify-content-between">
+                            <div>
+                                <h3 class="card-title h4"><?php echo htmlspecialchars($film['date_projection']); ?><span class="d-none d-lg-inline"><br></span>à <?php echo htmlspecialchars($film['lieu_projection']); ?> à <?php echo htmlspecialchars($film['heure_projection']); ?></h3>
+                                <h4 class="card-subtitle mb-2 text-muted h5 d-flex align-items-center justify-content-center"><?php echo htmlspecialchars($film['titre']); ?></h4>
+                                <!--<p class="card-text"><?php// echo htmlspecialchars($film['description']); ?></p>-->
                             </div>
-                        </div> <!-- /.carousel-item -->
-                        <div class="carousel-item col-12 col-md-4 px-4">
-                            <div class="seance h-100 text-center d-flex flex-column justify-content-between">
-                                <div>
-                                    <h3 class="card-title h4">Jeudi 22 octobre <span class="d-none d-lg-inline">2024<br></span>à 20H</h3>
-                                    <h4 class="card-subtitle mb-2 text-muted h5 d-flex align-items-center justify-content-center">Le Goût des Autres - VF</h4>
-                                </div>
-                                <div>
-                                    <a href="seance.html"><img src="img/films/2-Le-gout-des-autres.jpg" class="card-img-top" alt="Le Goût des Autres"></a>
-                                    <p class="my-2">
-                                        <a href="seance.html" class="btn w-75 bgcolor-3">En savoir plus</a>
-                                    </p>
-                                    <p class="my-2">
-                                        <a href="seance.html#reservation" class="btn w-75 bgcolor-2">J'achete mon billet</a>
-                                    </p>
-                                </div>
+                            <div>
+                                 <div class="imgfilm"><a  href="#"><img  src="<?php echo htmlspecialchars($film['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($film['titre']); ?>"></a></div>
+                                <p class="my-2">
+                                    <a href="seance.html" class="btn w-75 bgcolor-3">En savoir plus</a>
+                                </p>
+                                <p class="my-2">
+                                    <a href="achatBillet.php#reservation" class="btn w-75 bgcolor-2">J'achète mon billet</a>
+                                </p>
                             </div>
-                        </div> <!-- /.carousel-item -->
-                        <div class="carousel-item col-12 col-md-4 px-4">
-                            <div class="seance h-100 text-center d-flex flex-column justify-content-between">
-                                <div>
-                                    <h3 class="card-title h4">Jeudi 23 octobre <span class="d-none d-lg-inline">2024<br></span>à 22H</h3>
-                                    <h4 class="card-subtitle mb-2 text-muted h5 d-flex align-items-center justify-content-center">The Grand Budapest Hotel - VOST</h4>
-                                </div>
-                                <div>
-                                    <a href="seance.html"><img src="img/films/3-the_grand_budapest_hotel.jpg" class="card-img-top" alt="The Grand Budapest Hotel"></a>
-                                    <p class="my-2">
-                                        <a href="seance.html" class="btn w-75 bgcolor-3">En savoir plus</a>
-                                    </p>
-                                    <p class="my-2">
-                                        <a href="seance.html#reservation" class="btn w-75 bgcolor-2">J'achete mon billet</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div> <!-- /.carousel-item -->
-                        <div class="carousel-item col-12 col-md-4 px-4">
-                            <div class="seance h-100 text-center d-flex flex-column justify-content-between">
-                                <div>
-                                    <h3 class="card-title h4">Vendredi 24 octobre <span class="d-none d-lg-inline">2024<br></span>à 18H</h3>
-                                    <h4 class="card-subtitle mb-2 text-muted h5 d-flex align-items-center justify-content-center">Shaun le Mouton, le film - VF</h4>
-                                </div>
-                                <div>
-                                    <a href="seance.html"><img src="img/films/4-shaun-le-mouton.jpg" class="card-img-top" alt="Shaun le Mouton, le film"></a>
-                                    <p class="my-2">
-                                        <a href="seance.html" class="btn w-75 bgcolor-3">En savoir plus</a>
-                                    </p>
-                                    <p class="my-2">
-                                        <a href="seance.html#reservation" class="btn w-75 bgcolor-2">J'achete mon billet</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div> <!-- /.carousel-item -->
-                        <div class="carousel-item col-12 col-md-4 px-4">
-                            <div class="seance h-100 text-center d-flex flex-column justify-content-between">
-                                <div>
-                                    <h3 class="card-title h4">Vendredi 25 octobre <span class="d-none d-lg-inline">2024<br></span>à 20H</h3>
-                                    <h4 class="card-subtitle mb-2 text-muted h5 d-flex align-items-center justify-content-center">Adieu les Cons - VF</h4>
-                                </div>
-                                <div>
-                                    <a href="seance.html"><img src="img/films/5-Adieu-les-cons.jpg" class="card-img-top" alt="Adieu les Cons"></a>
-                                    <p class="my-2">
-                                        <a href="seance.html" class="btn w-75 bgcolor-3">En savoir plus</a>
-                                    </p>
-                                    <p class="my-2">
-                                        <a href="seance.html#reservation" class="btn w-75 bgcolor-2">J'achete mon billet</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div> <!-- /.carousel-item -->
-                        <div class="carousel-item col-12 col-md-4 px-4">
-                            <div class="seance h-100 text-center d-flex flex-column justify-content-between">
-                                <div>
-                                    <h3 class="card-title h4">Vendredi 26 octobre <span class="d-none d-lg-inline">2024<br></span>à 22H</h3>
-                                    <h4 class="card-subtitle mb-2 text-muted h5 d-flex align-items-center justify-content-center">Cinema Paradiso - VOST</h4>
-                                </div>
-                                <div>
-                                    <a href="seance.html"><img src="img/films/6-Cinema_Paradiso.jpg" class="card-img-top" alt="Cinema Paradiso"></a>
-                                    <p class="my-2">
-                                        <a href="seance.html" class="btn w-75 bgcolor-3">En savoir plus</a>
-                                    </p>
-                                    <p class="my-2">
-                                        <a href="seance.html#reservation" class="btn w-75 bgcolor-2">J'achete mon billet</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div> <!-- /.carousel-item -->
-                        <div class="carousel-item col-12 col-md-4 px-4">
-                            <div class="seance h-100 text-center d-flex flex-column justify-content-between">
-                                <div>
-                                    <h3 class="card-title h4">Samedi 27 octobre <span class="d-none d-lg-inline">2024<br></span>à 18H</h3>
-                                    <h4 class="card-subtitle mb-2 text-muted h5 d-flex align-items-center justify-content-center">Le Château Ambulant - VF</h4>
-                                </div>
-                                <div>
-                                    <a href="seance.html"><img src="img/films/7-Le-chateau-ambulant.jpg" class="card-img-top" alt="Le Château Ambulant"></a>
-                                    <p class="my-2">
-                                        <a href="seance.html" class="btn w-75 bgcolor-3">En savoir plus</a>
-                                    </p>
-                                    <p class="my-2">
-                                        <a href="seance.html#reservation" class="btn w-75 bgcolor-2">J'achete mon billet</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div> <!-- /.carousel-item -->
-                        <div class="carousel-item col-12 col-md-4 px-4">
-                            <div class="seance h-100 text-center d-flex flex-column justify-content-between">
-                                <div>
-                                    <h3 class="card-title h4">Samedi 27 octobre <span class="d-none d-lg-inline">2024<br></span>à 20H</h3>
-                                    <h4 class="card-subtitle mb-2 text-muted h5 d-flex align-items-center justify-content-center">Juno - VOST</h4>
-                                </div>
-                                <div>
-                                    <a href="seance.html"><img src="img/films/8-Juno.jpg" class="card-img-top" alt="Juno"></a>
-                                    <p class="my-2">
-                                        <a href="seance.html" class="btn w-75 bgcolor-3">En savoir plus</a>
-                                    </p>
-                                    <p class="my-2">
-                                        <a href="seance.html#reservation" class="btn w-75 bgcolor-2">J'achete mon billet</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div> <!-- /.carousel-item -->
-                        <div class="carousel-item col-12 col-md-4 px-4">
-                            <div class="seance h-100 text-center d-flex flex-column justify-content-between">
-                                <div>
-                                    <h3 class="card-title h4">Samedi 28 octobre <span class="d-none d-lg-inline">2024<br></span>à 22H</h3>
-                                    <h4 class="card-subtitle mb-2 text-muted h5 d-flex align-items-center justify-content-center">La Science des Rêves - VF</h4>
-                                </div>
-                                <div>
-                                    <a href="seance.html"><img src="img/films/9-La-science-des-reves.jpg" class="card-img-top" alt="..."></a>
-                                    <p class="my-2">
-                                        <a href="seance.html" class="btn w-75 bgcolor-3">En savoir plus</a>
-                                    </p>
-                                    <p class="my-2">
-                                        <a href="seance.html#reservation" class="btn w-75 bgcolor-2">J'achete mon billet</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div> <!-- /.carousel-item -->
-                        <div class="carousel-item col-12 col-md-4 px-4">
-                            <div class="seance h-100 text-center d-flex flex-column justify-content-between">
-                                <div>
-                                    <h3 class="card-title h4">Dimanche 28 octobre <span class="d-none d-lg-inline">2024<br></span>à 18H</h3>
-                                    <h4 class="card-subtitle mb-2 text-muted h5 d-flex align-items-center justify-content-center">Le Grand Méchant Renard - VF</h4>
-                                </div>
-                                <div>
-                                    <a href="seance.html"><img src="img/films/10-Le-grand-mechant-renard.jpg" class="card-img-top" alt="Le Grand Méchant Renard"></a>
-                                    <p class="my-2">
-                                        <a href="seance.html" class="btn w-75 bgcolor-3">En savoir plus</a>
-                                    </p>
-                                    <p class="my-2">
-                                        <a href="seance.html#reservation" class="btn w-75 bgcolor-2">J'achete mon billet</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div> <!-- /.carousel-item -->
-                        <div class="carousel-item col-12 col-md-4 px-4">
-                            <div class="seance h-100 text-center d-flex flex-column justify-content-between">
-                                <div>
-                                    <h3 class="card-title h4">Dimanche 29 octobre <span class="d-none d-lg-inline">2024<br></span>à 20H</h3>
-                                    <h4 class="card-subtitle mb-2 text-muted h5 d-flex align-items-center justify-content-center">Persepolis - VF</h4>
-                                </div>
-                                <div>
-                                    <a href="seance.html"><img src="img/films/11-Persepolis.jpg" class="card-img-top" alt="Persepolis"></a>
-                                    <p class="my-2">
-                                        <a href="seance.html" class="btn w-75 bgcolor-3">En savoir plus</a>
-                                    </p>
-                                    <p class="my-2">
-                                        <a href="seance.html#reservation" class="btn w-75 bgcolor-2">J'achete mon billet</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div> <!-- /.carousel-item -->
-                        <div class="carousel-item col-12 col-md-4 px-4">
-                            <div class="seance h-100 text-center d-flex flex-column justify-content-between">
-                                <div>
-                                    <h3 class="card-title h4">Dimanche 29 octobre <span class="d-none d-lg-inline">2024<br></span>à 22H</h3>
-                                    <h4 class="card-subtitle mb-2 text-muted h5 d-flex align-items-center justify-content-center">Looking For Eric - VOST</h4>
-                                </div>
-                                <div>
-                                    <a href="seance.html"><img src="img/films/12-Looking-for-Eric.jpg" class="card-img-top" alt="Looking For Eric"></a>
-                                    <p class="my-2">
-                                        <a href="seance.html" class="btn w-75 bgcolor-3">En savoir plus</a>
-                                    </p>
-                                    <p class="my-2">
-                                        <a href="seance.html#reservation" class="btn w-75 bgcolor-2">J'achete mon billet</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div> <!-- /.carousel-item -->
-                    </div> <!-- /.carousel-inner -->
-                    <a class="carousel-control-prev" href="#carouselSeances" role="button" data-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Précédent</span>
-                    </a>
-                    <a class="carousel-control-next" href="#carouselSeances" role="button" data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Suivant</span>
-                    </a>
-                </div> <!-- /#carouselSeances -->
-            </section> <!-- /#programme -->
+                        </div>
+                    </div> <!-- /.carousel-item -->
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>Aucune projection trouvée.</p>
+            <?php endif; ?>
+        </div> <!-- /.carousel-inner -->
+        
+        <a class="carousel-control-prev" href="#carouselSeances" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Précédent</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselSeances" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Suivant</span>
+        </a>
+    </div> <!-- /#carouselSeances -->
+</section> <!-- /#programme -->
 
             <!-- DEBUT SECTION INFOS PRATIQUES -->
 

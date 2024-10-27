@@ -54,7 +54,7 @@
                                         <a class="dropdown-item" href="inscription.php">S'inscrire</a>
 
                                         <?php else : ?>
-                                        <a class="dropdown-item" href="#">Mes informations</a>
+                                        <a class="dropdown-item" href="inforUser.php">Mes informations</a>
                                         <a class="dropdown-item" href="deconnexion.php">Déconnexion</a>
                                     </div>
                                 </li>
