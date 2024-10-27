@@ -1,35 +1,53 @@
+<?php
+session_start();
+require_once("bd/dbconnect.php"); // Connexion à la base de données
+require_once("fonction.php"); // Fichier contenant la fonction redirectToUrl()
+
+if (isset($_POST['confirmerProjection'])) {
+    $id_film = $_POST['id_film'];
+    $date_projection = $_POST['date_projection'];
+    $heure_projection = $_POST['heure_projection'];
+    $lieu_projection = $_POST['lieu_projection'];
+
+    // Insérer les informations de projection dans la table projections
+    $stmt = $connexionDB->prepare("INSERT INTO projectionfilm (id, date_projection, heure_projection, lieu_projection) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$id_film, $date_projection, $heure_projection, $lieu_projection]);
+
+    redirectToUrl('respProductionFlanningfilm.php');
+}
+
+// Requête pour récupérer les films retenus
+$query = "SELECT * FROM films_retenus"; 
+$stmt = $connexionDB->query($query);
+$filmsRetenus = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planification des Films Retenus</title>
+    <link rel="stylesheet" href="css/main.css">
+    <title>Films Retenus</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f4f8;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
             padding: 20px;
-            margin: 0;
         }
         .container {
-            max-width: 900px;
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 1000px;
+            background-color: #ffffff;
             padding: 30px;
             margin: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
         h1 {
+            text-align: center;
             color: #2c3e50;
-            font-size: 28px;
-            text-align: center;
             margin-bottom: 20px;
-        }
-        h2 {
-            color: #34495e;
-            font-size: 22px;
-            margin-bottom: 15px;
-            text-align: center;
         }
         table {
             width: 100%;
@@ -37,107 +55,142 @@
             margin-top: 20px;
         }
         th, td {
-            padding: 12px;
-            text-align: left;
+            padding: 15px;
             border-bottom: 1px solid #ddd;
+            text-align: left;
         }
         th {
             background-color: #2980b9;
-            color: #fff;
-            font-weight: 600;
+            color: white;
         }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-        input[type="date"], input[type="time"] {
-            padding: 8px;
-            font-size: 14px;
-            width: 100%;
-            margin-top: 10px;
+        td img {
+            width: 100px;
+            border-radius: 6px;
         }
         button {
-            padding: 8px 14px;
+            padding: 10px 20px;
             background-color: #3498db;
             color: white;
             border: none;
             border-radius: 5px;
-            font-size: 14px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: 0.3s;
         }
         button:hover {
-            background-color: #2980b9;
+            background-color: #e67e22;
         }
-        .planification-form {
-            display: flex;
-            gap: 15px;
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
             align-items: center;
+            justify-content: center;
+            z-index: 999;
         }
-        .planification-form input {
-            flex-grow: 1;
+        .popup-content {
+            background-color: #ffffff;
+            padding: 20px;
+            width: 400px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-            table, th, td {
-                font-size: 14px;
-            }
+        .popup-content h2 {
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: #2c3e50;
+        }
+        .popup-content input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .popup-content button[type="submit"] {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .popup-content button[type="submit"]:hover {
+            background-color: #2ecc71;
+        }
+        .popup-content button[type="button"] {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Planification des Films Retenus</h1>
-    
-    <h2>Liste des Films Validés</h2>
+    <h1>Films Retenus</h1>
     <table>
         <tr>
             <th>Image</th>
             <th>Titre</th>
             <th>Description</th>
-            <th>Date de Projection</th>
-            <th>Heure de Projection</th>
+            <th>Fichier</th>
             <th>Actions</th>
         </tr>
-        <tr>
-            <td><img src="images/exemple_film1.jpg" alt="Titre du film" style="width: 100px; border-radius: 8px;"></td>
-            <td>Titre du Film 1</td>
-            <td>Description du Film 1</td>
-            <td>Non planifié</td>
-            <td>Non planifié</td>
-            <td>
-                <form method="POST" class="planification-form">
-                    <input type="hidden" name="film_id" value="1">
-                    <input type="date" name="date_projection" required>
-                    <input type="time" name="heure_projection" required>
-                    <button type="submit">Planifier</button>
-                </form>
-            </td>
-        </tr>
-        <tr>
-            <td><img src="images/exemple_film2.jpg" alt="Titre du film" style="width: 100px; border-radius: 8px;"></td>
-            <td>Titre du Film 2</td>
-            <td>Description du Film 2</td>
-            <td>Non planifié</td>
-            <td>Non planifié</td>
-            <td>
-                <form method="POST" class="planification-form">
-                    <input type="hidden" name="film_id" value="2">
-                    <input type="date" name="date_projection" required>
-                    <input type="time" name="heure_projection" required>
-                    <button type="submit">Planifier</button>
-                </form>
-            </td>
-        </tr>
-        <!-- Ajouter d'autres films ici -->
+        <?php foreach ($filmsRetenus as $film): ?>
+            <tr>
+                <td><img src="<?php echo htmlspecialchars($film['image']); ?>" alt="<?php echo htmlspecialchars($film['titre']); ?>"></td>
+                <td><?php echo htmlspecialchars($film['titre']); ?></td>
+                <td><?php echo htmlspecialchars($film['description']); ?></td>
+                <td>
+                    <?php if (!empty($film['fichier'])): ?>
+                        <a href="<?php echo htmlspecialchars($film['fichier']); ?>" target="_blank" style="color: #e67e22; text-decoration: none;">Voir le fichier</a>
+                    <?php else: ?>
+                        <span style="color: #999;">Aucun fichier</span>
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <button onclick="openPopup(<?php echo $film['id']; ?>)">Planifier la Projection</button>
+                </td>
+            </tr>
+        <?php endforeach; ?>
     </table>
 </div>
+
+<div class="popup" id="popup">
+    <div class="popup-content">
+        <h2>Planifier la Projection</h2>
+        <form id="planificationForm" method="POST" action="">
+            <input type="hidden" name="id_film" id="filmId">
+            <label for="date_projection">Date:</label>
+            <input type="date" name="date_projection" required>
+            <label for="heure_projection">Heure:</label>
+            <input type="time" name="heure_projection" required>
+            <label for="lieu_projection">Lieu:</label>
+            <input type="text" name="lieu_projection" required placeholder="Lieu de la projection">
+            <button type="submit" name="confirmerProjection">Confirmer</button>
+            <button type="button" onclick="closePopup()">Annuler</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openPopup(idFilm) {
+        document.getElementById("filmId").value = idFilm;
+        document.getElementById("popup").style.display = "flex";
+    }
+
+    function closePopup() {
+        document.getElementById("popup").style.display = "none";
+    }
+</script>
 
 </body>
 </html>

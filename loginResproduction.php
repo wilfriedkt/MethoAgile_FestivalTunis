@@ -35,7 +35,7 @@ if (isset($postData['connexion'])) {
                         ];
 
                         // Redirection vers la page d'accueil
-                        redirectToUrl('responsableProduction.php');
+                        redirectToUrl('respoProductionFilmS.php');
                     } else {
                         $errCompte = "Désolé, mot de passe incorrect.";
                     }
