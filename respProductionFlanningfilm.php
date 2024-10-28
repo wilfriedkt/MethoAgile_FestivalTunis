@@ -17,7 +17,7 @@ if (isset($_POST['confirmerProjection'])) {
 }
 
 // Requête pour récupérer les films retenus
-$query = "SELECT * FROM films_retenus"; 
+$query = "SELECT * FROM films_retenus ORDER BY date_retenue DESC"; 
 $stmt = $connexionDB->query($query);
 $filmsRetenus = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

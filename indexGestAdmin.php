@@ -71,8 +71,8 @@ require_once("bd/dbconnect.php"); // Connection à la base de données
 <div class="container">
     <h1>Système de Gestion du Festival International de Tunis</h1>
     <a href="loginResproduction.php" class="button">Espace Responsable de Production</a>
-    <a href="president_jury.php" class="button">Espace Président du Jury</a>
-    <a href="administrateur.php" class="admin-button">Administrateur de la Plateforme</a> <!-- Nouveau bouton -->
+    <a href="#" class="button">Espace Président du Jury</a>
+    <a href="admin/loginAdmin.php" class="admin-button">Administrateur de la Plateforme</a> <!-- Nouveau bouton -->
 </div>
 
 </body>
